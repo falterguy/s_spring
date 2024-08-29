@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{game/basic}">
+	
+<head>
+	<th:block layout:fragment="title">게임후기</th:block>
+	<th:block layout:fragment="css"></th:block>
+	<th:block layout:fragment="script"></th:block>
+</head>	
+
+	<div layout:fragment="main" id="main">
+		여기가 index
+		<b th:text="${#session.getAttribute('user').email}"></b>
+		
+	</div>
+
+
+</html>

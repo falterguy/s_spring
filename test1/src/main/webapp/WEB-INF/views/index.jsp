@@ -7,14 +7,14 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<form method="post" action="/login">
-	아이디:<input type="type" name="id"><br>
-	비밀번호:<input type="password" name="pw"><br>
-	<button>로그인</button>
+	<h1> ${pageTitle} </h1>
+
+	<a href="/login">로그인</a>
+	<a href="/signUp">회원가입</a>
+	<a href="/board">게시판</a>
 	
 	
-	</form>
-	
+
 
 </body>
 </html>

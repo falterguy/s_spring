@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.movieAndgame.Dao.GameMemberDao">
+
+
+
+	<select id="login" resultType="com.example.movieAndgame.Dto.GameMemberDto"
+		parameterType="com.example.movieAndgame.Dto.GameMemberDto">
+		select email, password, nickname
+		from game_member
+			where email=#{email} and password=#{password} 
+		
+	</select>
+	
+	<insert id="insert" parameterType="com.example.movieAndgame.Dto.GameMemberDto">
+		insert into gamemember(email, password, nickname )
+			values(#{email} , #{password} , #{nickname})
+	</insert>
+	
+</mapper>
