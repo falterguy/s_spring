@@ -31,6 +31,10 @@ ul{ list-style-type:none; }
 #userBox{
 	display:flex;
 }
+#menuList{
+	display:flex;
+	justify-content:space-between;
+}
 .menu ul, .menu li {
 	margin: 0;
 	padding: 0;
