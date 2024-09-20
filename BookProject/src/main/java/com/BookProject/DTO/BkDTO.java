@@ -29,12 +29,10 @@ public class BkDTO {
 	private String burl;
 	private String filename;
 	private MultipartFile bimg;
-	
+
 	public static BkDTO of(String btitl) {
-		BkDTO bkDto = new BkDTO();
-		bkDto.setBtitl(btitl);
-				
-		return bkDto;
+		BkDTO bkDTO=new BkDTO();
+		bkDTO.setBtitl(btitl);
+		return bkDTO;
 	}
-	
 }

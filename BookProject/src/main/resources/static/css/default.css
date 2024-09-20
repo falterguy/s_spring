@@ -5,11 +5,11 @@
 	padding:0;
 	box-sizing:border-box;
 }
-ul{ list-style-type:none; }
 #wrap{
 	width:1300px;
 	margin:0 auto;
 }
+ul{ list-style-type:none; }
 #header{
 	width:100%;
 	margin-bottom:30px;
@@ -20,55 +20,52 @@ ul{ list-style-type:none; }
 	z-index:100;
 }
 #nav{
-	padding:10px 0;
-	display:flex;
-	align-items:center;
+    display: flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
 }
 #navTop{
 	display:flex;
 	justify-content:space-between;
 }
+#centerMenu {
+    flex-grow:1;
+    display:flex;
+    justify-content:center;
+}
+
+#rightMenu {
+    display:flex;
+    justify-content:flex-end;
+}
 #userBox{
 	display:flex;
+    gap:20px;
 }
 #menuList{
 	display:flex;
 	justify-content:space-between;
 }
-.menu ul, .menu li {
-	margin: 0;
-	padding: 0;
+.menu{
+	padding:10px 40px;
+	border-right:none;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
 }
-.menu ul {
-	background: gray;
-	list-style: none;
-	width: 100%;
+.menu:hover {
+    font-weight:800;
+    background:#5cb85c;
+    color:white;
+    border-radius:5px;
 }
-.menu li {
-	float: left;
-	position: relative;
-	width:auto;
-}
-.menu a {
-	background: #30A6E6;
-	color: #FFFFFF;
-	display: block;
-	font: bold 12px/20px sans-serif;
-	padding: 10px 25px;
-	text-align: center;
-	text-decoration: none;
-	-webkit-transition: all .25s ease;
-	-moz-transition: all .25s ease;
-	-ms-transition: all .25s ease;
-	-o-transition: all .25s ease;
-	transition: all .25s ease;
-}
-
+table{ margin-top:10px; }
 #footer{
 	width:100%;
-	margin-top:30px;
+	margin-top:50px;
 	border-top:1px solid #ddd;
-	position:sticky;
+	position:relative;
 	bottom:0;
 	background:#fff;
 	z-index:100;
@@ -81,19 +78,30 @@ ul{ list-style-type:none; }
 	margin:0 15px;
 	position:relative;
 }
-#banner ul{
-	display:flex;
-	left:10px;
-}
-#law ul{
-	display:flex;
-	left:10px;
-}
 #footer li:hover{
 	font-weight:800;
 	color:black;
-	background:lightgreen;
+	background:#5cb85c;
 	cursor:pointer;
+}
+#banner, #law, #info{
+	height:auto;
+	max-height:30px;
+	overflow:hidden;
+}
+#banner ul{
+	display:flex;
+	justify-content:center;
+	left:10px;
+}
+#banner ul li img{
+	width:125px;
+	max-height:30px;
+	object-fit:contain;
+}
+#law ul{
+	display:flex;
+	margin-left:10px;
 }
 #info ul{
 	display:flex;
@@ -104,53 +112,131 @@ ul{ list-style-type:none; }
 }
 #logo .logo{
 	background:url(/image/5teamlibrary.jpg) no-repeat center;
-	background-size:cover;
-	height:50px;
-	width:70px;
+	background-size:contain;
+	height:40px;
+	width:80px;
 	cursor:pointer;
 }
-#copyright ul .logo2{
+#info ul .logo2{
 	background:url(/image/5teamlibrary2.jpg) no-repeat center;
-	background-size:cover;
-	height:50px;
-	width:250px;
+	background-size:contain;
+	height:30px;
+	width:120px;
 	cursor:pointer;
+}
+.btitl, .bsubt, .bvolu, .bwrit, .bpubl, .bsort, .burl {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
 }
 .btitl{
 	width:400px;
+	text-align:center;
 }
 .bsubt{
-	width:400px;
+	width:300px;
+	text-align:center;
 }
 .bvolu{
 	width:50px;
+	text-align:center;
 }
 .bwrit{
-	width:250px;
+	width:180px;
+	text-align:center;
 }
 .bpubl{
-	width:250px;
+	width:180px;
+	text-align:center;
+}
+.bsort{
+	width:100px;
+	text-align:center;
+}
+.burl{
+	width:80px;
+}
+.pagination{
+	margin-top:20px;
 }
 .pagination ul {
-    display: flex;
-    justify-content: center; /* 버튼들이 가운데에 정렬되도록 */
-    padding: 0;
+    display:flex;
+    justify-content:center;
+    padding:0;
 }
 .pagination ul li {
-    list-style: none;
-    margin-right: 10px; /* 버튼 사이에 간격 추가 */
+    list-style:none;
+    margin-right:10px;
 }
 .pagination ul li a {
-    text-decoration: none;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    color: black;
+    text-decoration:none;
+    padding:8px 12px;
+    border:1px solid #ddd;
+    border-radius:5px;
+    color:black;
 }
 .pagination ul li a.active {
-    background-color: lightgreen;
-    font-weight: bold;
+    background-color:#5cb85c;
+    font-weight:bold;
 }
 .pagination ul li a:hover {
-    background-color: #ddd;
+    background-color:#ddd;
+}
+#navBottom {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+#menuList {
+    display:flex;
+    justify-content:center;
+    gap:20px;
+}
+
+select{
+    padding: 10px;
+    margin: 5px 0 0 50px;
+}
+select, input, textarea {
+    width:10%;
+    border:1px solid #ccc;
+    border-radius: 5px;
+}
+#searchKeyword1, #searchKeyword2, #searchKeyword3, #searchKeyword4 {
+    width:80%;
+    padding:10px;
+    margin:5px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+button {
+    padding:10px;
+    background-color:#5cb85c;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    color:white;
+    font-size:24px;
+    float:center;
+    display:block;
+    margin:20px auto;
+    width:150px;
+}
+.bview{
+	height:80px;
+    text-decoration:none;
+    color:black;
+    border-radius:5px;
+}
+.bview:hover{
+	cursor:pointer;
+    text-decoration:none;
+    color:blue;
+    font-weight:900;
+	background-color:#ccffcc;
+	box-shadow:3px 3px 5px rgba(0,0,0,0.2);
+	border-collapse:collapse;
+    border-radius:5px;
 }

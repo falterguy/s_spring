@@ -22,11 +22,11 @@ import com.BookProject.Repository.BkRepository;
 public class BkService {
 	@Autowired
 	private BkRepository bkRepository;
-	public void bookSave(BkDTO bkDTO) {
+	public boolean bookSave(BkDTO bkDTO) {
+		if(bkRepository.existsByBtitlAndBvolu(bkDTO.getBtitl(), bkDTO.getBvolu())) { return false; }
 		Bk bk=convertDTOToEntity(bkDTO);
-		if(bk!=null) {
-			bkRepository.save(bk);
-		}
+		if(bk!=null) { bkRepository.save(bk); }
+		return true;
 	}
 	public List<Bk> findAllBooks(){ return bkRepository.findAll(); }
 	public Optional<BkDTO> findById(Long bid) {
@@ -137,5 +137,34 @@ public class BkService {
 		}
 		Page<Bk> books=bkRepository.findByMultipleCriteria(titl,writ,publ,sort,pageable);
 		return books.map(this::convertEntityToDTO);
+	}
+	public List<BkDTO> searchAllBooksByMultipleCriteria(String st1, String sk1, String st2, String sk2, String st3, String sk3, String st4, String sk4){
+		String titl=null, writ=null, publ=null, sort=null;
+		if(st1!=null&&!sk1.isBlank()) {
+			if(st1.equals("btitl")) titl=sk1;
+			if(st1.equals("bwrit")) writ=sk1;
+			if(st1.equals("bpubl")) publ=sk1;
+			if(st1.equals("bsort")) sort=sk1;
+		}
+		if(st2!=null&&!sk2.isBlank()) {
+			if(st2.equals("btitl")) titl=sk2;
+			if(st2.equals("bwrit")) writ=sk2;
+			if(st2.equals("bpubl")) publ=sk2;
+			if(st2.equals("bsort")) sort=sk2;
+		}
+		if(st3!=null&&!sk3.isBlank()) {
+			if(st3.equals("btitl")) titl=sk3;
+			if(st3.equals("bwrit")) writ=sk3;
+			if(st3.equals("bpubl")) publ=sk3;
+			if(st3.equals("bsort")) sort=sk3;
+		}
+		if(st4!=null&&!sk4.isBlank()) {
+			if(st4.equals("btitl")) titl=sk4;
+			if(st4.equals("bwrit")) writ=sk4;
+			if(st4.equals("bpubl")) publ=sk4;
+			if(st4.equals("bsort")) sort=sk4;
+		}
+		List<Bk> books=bkRepository.findAllByMultipleCriteria(titl, writ, publ, sort);
+		return books.stream().map(this::convertEntityToDTO).collect(Collectors.toList());
 	}
 }

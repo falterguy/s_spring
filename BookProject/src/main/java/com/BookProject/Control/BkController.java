@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -49,35 +51,39 @@ public class BkController {
 	}
 	@GetMapping("/searchkeyword")
 	public String bookSearch(HttpServletRequest rq, Model model, RedirectAttributes ra, @RequestParam(defaultValue = "0") int page) {
-		String st1=rq.getParameter("searchType1");
-		String sk1=rq.getParameter("searchKeyword1");
-		String st2=rq.getParameter("searchType2");
-		String sk2=rq.getParameter("searchKeyword2");
-		String st3=rq.getParameter("searchType3");
-		String sk3=rq.getParameter("searchKeyword3");
-		String st4=rq.getParameter("searchType4");
-		String sk4=rq.getParameter("searchKeyword4");
-		String stl1=convertToReadableLabel(st1);
-		String stl2=convertToReadableLabel(st2);
-		String stl3=convertToReadableLabel(st3);
-		String stl4=convertToReadableLabel(st4);
-		int pageSize=10;
-		Pageable pageable=PageRequest.of(page, pageSize);
+		String st1=rq.getParameter("searchType1")!=null ? rq.getParameter("searchType1") : "";
+		String sk1=rq.getParameter("searchKeyword1")!=null ? rq.getParameter("searchKeyword1") : "";
+		String st2=rq.getParameter("searchType2")!=null ? rq.getParameter("searchType2") : "";
+		String sk2=rq.getParameter("searchKeyword2")!=null ? rq.getParameter("searchKeyword2") : "";
+		String st3=rq.getParameter("searchType3")!=null ? rq.getParameter("searchType3") : "";
+		String sk3=rq.getParameter("searchKeyword3")!=null ? rq.getParameter("searchKeyword3") : "";
+		String st4=rq.getParameter("searchType4")!=null ? rq.getParameter("searchType4") : "";
+		String sk4=rq.getParameter("searchKeyword4")!=null ? rq.getParameter("searchKeyword4") : "";
 		if(sk1.isEmpty()&&sk2.isEmpty()&&sk3.isEmpty()&&sk4.isEmpty()) {
+			ra.addFlashAttribute("alertMessage","입력된 검색 단어가 없습니다");
+			return "redirect:/search";
+		}
+		int pageSize=10;
+		Pageable pageable=PageRequest.of(page, pageSize, Sort.by("bid").descending());
+		Page<BkDTO> books=bkService.searchBooksByMultipleCriteria(st1, sk1, st2, sk2, st3, sk3, st4, sk4, pageable);
+		if(books.isEmpty()) {
 			ra.addFlashAttribute("alertMessage","검색 결과가 없습니다");
 			return "redirect:/search";
 		}
-		Page<BkDTO> books=bkService.searchBooksByMultipleCriteria(st1, sk1, st2, sk2, st3, sk3, st4, sk4, pageable);
 		model.addAttribute("books",books.getContent());
 		model.addAttribute("currentPage",page);
 		model.addAttribute("totalPages",books.getTotalPages());
-		model.addAttribute("st1",stl1);
+		model.addAttribute("stl1",convertToReadableLabel(st1));
+		model.addAttribute("st1",st1);
 		model.addAttribute("sk1",sk1);
-		model.addAttribute("st2",stl2);
+		model.addAttribute("stl2",convertToReadableLabel(st2));
+		model.addAttribute("st2",st2);
 		model.addAttribute("sk2",sk2);
-		model.addAttribute("st3",stl3);
+		model.addAttribute("stl3",convertToReadableLabel(st3));
+		model.addAttribute("st3",st3);
 		model.addAttribute("sk3",sk3);
-		model.addAttribute("st4",stl4);
+		model.addAttribute("stl4",convertToReadableLabel(st4));
+		model.addAttribute("st4",st4);
 		model.addAttribute("sk4",sk4);
 		return "book/results";
 	}
@@ -86,18 +92,22 @@ public class BkController {
 		case "btitl": return "책 제목";
 		case "bwrit": return "지은이";
 		case "bpubl": return "출판사";
-		case "bsort": return "저자";
+		case "bsort": return "분류";
 		default: return "";
 		}
 	}
 	@GetMapping("/write")
 	public String write(Model model){
 		model.addAttribute("bkDTO",new BkDTO());
+		model.addAttribute("false","");
 		return "book/write";
 	}
 	@PostMapping("/write")
-	public String write(@ModelAttribute BkDTO bkDTO, @RequestParam("bimg") MultipartFile file, BindingResult bindingResult) {
-		if(bindingResult.hasErrors()) { return "book/write"; }
+	public String write(@Valid @ModelAttribute BkDTO bkDTO, @RequestParam("bimg") MultipartFile file, BindingResult bindingResult, Model model) {
+		if(bindingResult.hasErrors()) {
+			model.addAttribute("bkDTO",bkDTO);
+			return "book/write";
+		}
 		String uploadPath="";
 		String saveName="";
 		String fileUrl="";
@@ -113,28 +123,53 @@ public class BkController {
 				e.printStackTrace();
 			}
 		}
+		if(!bkService.bookSave(bkDTO)) {
+			model.addAttribute("bkDTO",bkDTO);
+			model.addAttribute("check","이미 등록된 도서입니다");
+			return "book/write";
+		}
 		bkService.bookSave(bkDTO);
-		return "redirect:/write";
+		model.addAttribute("bkDTO",bkDTO);
+		model.addAttribute("bsave","도서 등록 성공");
+		return "book/write";
 	}
 	@GetMapping("/view/{bid}")
-	public String view(@PathVariable("bid") Long bid, Model model, RedirectAttributes ra){
-		Optional<BkDTO> bko=bkService.findById(bid);
-		if(!bko.isPresent()) {
-			Long nextBid=bkService.findNextValidBid(bid);
-			if(nextBid!=null) {
-				return "redirect:/view/"+nextBid;
+	public String results(@PathVariable("bid") Long bid, Model model, RedirectAttributes ra,
+					@RequestParam(value="st1",required=false) String st1,
+					@RequestParam(value="sk1",required=false) String sk1,
+					@RequestParam(value="st2",required=false) String st2,
+					@RequestParam(value="sk2",required=false) String sk2,
+					@RequestParam(value="st3",required=false) String st3,
+					@RequestParam(value="sk3",required=false) String sk3,
+					@RequestParam(value="st4",required=false) String st4,
+					@RequestParam(value="sk4",required=false) String sk4,
+					@RequestParam(value="page", required=false) Optional<Integer> po){
+		int page=po.orElse(0);
+		List<BkDTO> sr=bkService.searchAllBooksByMultipleCriteria(st1, sk1, st2, sk2, st3, sk3, st4, sk4);
+		int ci=-1;
+		for(int i=0;i<sr.size();i++) {
+			if(sr.get(i).getBid().equals(bid)) {
+				ci=i;
+				break;
 			}
-			ra.addFlashAttribute("alertMessage","해당 도서를 찾을 수 없습니다.");
+		}
+		if(ci==-1) {
+			ra.addFlashAttribute("alertMessage","해당 도서를 찾을 수 없습니다");
 			return "redirect:/error";
 		}
-		BkDTO bk=bko.get();
-		Long maxBid=bkService.findMaxBid();
-		Long minBid=bkService.findMinBid();
-		Long preBid=bkService.findPreviousValidBid(bid);
-		Long nextBid=bkService.findNextValidBid(bid);
+		Long preBid=ci>0 ? sr.get(ci-1).getBid() : null;
+		Long nextBid=ci<sr.size()-1 ? sr.get(ci+1).getBid() : null;
+		BkDTO bk=sr.get(ci);
+		model.addAttribute("st1",st1);
+		model.addAttribute("sk1",sk1);
+		model.addAttribute("st2",st2);
+		model.addAttribute("sk2",sk2);
+		model.addAttribute("st3",st3);
+		model.addAttribute("sk3",sk3);
+		model.addAttribute("st4",st4);
+		model.addAttribute("sk4",sk4);
+		model.addAttribute("page",page);
 		model.addAttribute("bk",bk);
-		model.addAttribute("maxBid",maxBid);
-		model.addAttribute("minBid",minBid);
 		model.addAttribute("preBid",preBid);
 		model.addAttribute("nextBid",nextBid);
 		return "book/view";
